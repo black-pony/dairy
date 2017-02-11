@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Document</title>
+  <link rel="stylesheet" href="/css/index.css">
+</head>
+<body>
+  <div class="wrapper">
+    <h1>首页</h1>
+    <h3 class="list"><a href="/add" class="edit add">添加</a></h3>
+    <ul class="list">
+      <% for(var i=0;i<list.length;i++){ %>
+      <li>
+        <span class="num"><%= list[i].id %></span><span><%= list[i].title %></span><a class="delete" href="/delete?id=<%= list[i].id %>">删除</a><a class="edit" href="/edit?id=<%= list[i].id %>">编辑</a>
+      </li>
+      <% } %>
+    </ul>
+  </div>
+</body>
+</html>
