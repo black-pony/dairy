@@ -1,3 +1,9 @@
+---
+date: 2017-02-11 11:54
+status: public
+title: 留言本项目
+---
+
 ## 学习目标
 - 通过本项目熟悉express的用法
 - 通过本项目熟悉如何用node使用mysql
@@ -366,11 +372,9 @@ add.ejs代码如下：
 app.js代码如下：
 ```javascript
 var express = require('express');
-var formidable = require('express-formidable');
 var app = express();
 app.set('view engine','ejs');
 app.use(express.static('public'));
-app.use(formidable());
 var router = require('./router');
 app.use(router);
 app.listen(3000,function(){
@@ -382,6 +386,8 @@ router.js代码如下：
 ```javascript
 var express = require('express');
 var router = express.Router();
+var multer  = require('multer')
+var upload = multer({ dest: 'uploads/' })
 var mysql = require('mysql');
 var connection = mysql.createConnection({
     host:'127.0.0.1',
@@ -403,10 +409,9 @@ router.route('/add')
         // res.send('添加页面 get');
         res.render('add');
       })
-      .post(function(req,res){
-        // console.log(req.fields);
-        // res.send('添加页面 post');
-        connection.query(`insert into articles(title,content) values ("${req.fields.title}","${req.fields.content}")`,function(err,result){
+      .post(upload.any(),function(req,res){
+        var fields = req.body;
+        connection.query(`insert into articles(title,content) values ("${fields.title}","${fields.content}")`,function(err,result){
             if(err)throw err;
             // console.log(result);
             res.redirect('/');
@@ -510,9 +515,10 @@ router.route('/edit')
             res.render('edit',{id:rows[0].id,title:rows[0].title,content:decodeURIComponent(rows[0].content)});
         });
       })
-      .post(function(req,res){
+      .post(upload.any(),function(req,res){
         // res.send('编辑页面 post');
-        connection.query(`update articles set title="${req.fields.title}",content="${encodeURIComponent(req.fields.content)}" where id = ${req.fields.id}`,function(err,result){
+        var fields = req.body;
+        connection.query(`update articles set title="${fields.title}",content="${encodeURIComponent(fields.content)}" where id = ${fields.id}`,function(err,result){
             if(err)throw err;
             console.log(result);
             res.redirect('/');
@@ -532,8 +538,3 @@ module.exports = router;
 
 ## 最终实现代码地址
 [下载地址](https://github.com/black-pony/dairy)
-
-
-## 待优化
-- 把数据模型相关的代码提取出来
-- 使用orm2
