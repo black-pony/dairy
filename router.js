@@ -1,5 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var multer  = require('multer')
+var upload = multer({ dest: 'uploads/' })
+
 var mysql = require('mysql');
 var connection = mysql.createConnection({
     host:'127.0.0.1',
@@ -21,10 +24,11 @@ router.route('/add')
         // res.send('添加页面 get');
         res.render('add');
       })
-      .post(function(req,res){
-        // console.log(req.fields);
+      .post(upload.any(),function(req,res){
         // res.send('添加页面 post');
-        connection.query(`insert into articles(title,content) values ("${req.fields.title}","${req.fields.content}")`,function(err,result){
+        // var files = req.files;
+        var fields = req.body;
+        connection.query(`insert into articles(title,content) values ("${fields.title}","${fields.content}")`,function(err,result){
             if(err)throw err;
             // console.log(result);
             res.redirect('/');
@@ -40,9 +44,10 @@ router.route('/edit')
             res.render('edit',{id:rows[0].id,title:rows[0].title,content:decodeURIComponent(rows[0].content)});
         });
       })
-      .post(function(req,res){
+      .post(upload.any(),function(req,res){
         // res.send('编辑页面 post');
-        connection.query(`update articles set title="${req.fields.title}",content="${encodeURIComponent(req.fields.content)}" where id = ${req.fields.id}`,function(err,result){
+        var fields = req.body;
+        connection.query(`update articles set title="${fields.title}",content="${encodeURIComponent(fields.content)}" where id = ${fields.id}`,function(err,result){
             if(err)throw err;
             console.log(result);
             res.redirect('/');

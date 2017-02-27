@@ -3,7 +3,6 @@ var formidable = require('express-formidable');
 var app = express();
 app.set('view engine','ejs');
 app.use(express.static('public'));
-app.use(formidable());
 var router = require('./router');
 app.use(router);
 app.listen(3000,function(){
